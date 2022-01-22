@@ -26,6 +26,8 @@ struct MissionView: View {
                         .scaledToFit()
                         .frame(maxWidth: geo.size.width * 0.6)
                         .padding(.top)
+                    
+                    Text(mission.launchDateString)
                 }
                 
                 Divider()

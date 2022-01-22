@@ -9,6 +9,7 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    @State private var  isGridShowing = true
     let astronauts: [String: Astronaut] = Bundle.main.decode("astronauts.json")
     
     let missions: [Mission] = Bundle.main.decode("missions.json")
@@ -20,46 +21,94 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: columns) {
+            if isGridShowing {
+                ScrollView {
+                    LazyVGrid(columns: columns) {
+                        ForEach(missions) { mission in
+                            NavigationLink(destination: MissionView(mission: mission, astronauts: astronauts)) {
+                                VStack {
+                                    Image(mission.image)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width:100, height: 100)
+                                        .padding()
+                                    
+                                    VStack {
+                                        Text(mission.displayName)
+                                            .font(.headline)
+                                            .foregroundColor(.white)
+                                        
+                                        Text(mission.launchDateString)
+                                            .font(.caption)
+                                            .foregroundColor(.white.opacity(0.5))
+                                    }
+                                    .padding(.vertical)
+                                    .frame(maxWidth: .infinity)
+                                    .background(Color.lightBackground)
+                                    
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .stroke(.lightBackground)
+                                )
+                            }
+                        }
+                    }
+                    .padding([.horizontal, .bottom])
+                }
+                .padding(.top, 150.0)
+                .navigationTitle("Moonshot")
+                .preferredColorScheme(.dark)
+                .background(Color.darkBackground)
+                .ignoresSafeArea()
+                .toolbar {
+                    Button {
+                        withAnimation{
+                            isGridShowing.toggle()
+                        }
+                        
+                    } label: {
+                        Image(systemName: "togglepower")
+                            .foregroundColor(.white)
+                    }
+                    
+                }
+            }
+            
+            else {
+                List {
                     ForEach(missions) { mission in
                         NavigationLink(destination: MissionView(mission: mission, astronauts: astronauts)) {
-                            VStack {
+                            HStack {
                                 Image(mission.image)
                                     .resizable()
-                                    .scaledToFit()
-                                    .frame(width:100, height: 100)
-                                    .padding()
+                                    .frame(width: 50, height: 50)
                                 
-                                VStack {
-                                    Text(mission.displayName)
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                    
-                                    Text(mission.launchDateString)
-                                        .font(.caption)
-                                        .foregroundColor(.white.opacity(0.5))
-                                }
-                                .padding(.vertical)
-                                .frame(maxWidth: .infinity)
-                                .background(Color.lightBackground)
-        
+                                Text(mission.displayName)
+                                
+                                Spacer()
+                                
+                                Text(mission.launchDateString)
                             }
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(.lightBackground)
-                            )
                         }
                     }
                 }
-                .padding([.horizontal, .bottom])
+                .toolbar {
+                    Button {
+                        withAnimation{
+                            isGridShowing.toggle()
+                        }
+                        
+                    } label: {
+                        Image(systemName: "togglepower")
+                            .foregroundColor(.darkBackground)
+                    }
+                    
+                }
+                .foregroundColor(.darkBackground)
+                .background(Color.darkBackground)
             }
-            .padding(.top, 150.0)
-            .navigationTitle("Moonshot")
-            .preferredColorScheme(.dark)
-            .background(Color.darkBackground)
-            .ignoresSafeArea()
             //.navigationBarHidden(true)
         }
         .navigationViewStyle(StackNavigationViewStyle())
